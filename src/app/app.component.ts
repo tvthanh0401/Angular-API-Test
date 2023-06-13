@@ -52,7 +52,9 @@ export class AppComponent implements OnInit, OnDestroy {
             .subscribe(() => {
                 this.setLoginDisplay();
                 this.checkAndSetActiveAccount();
+                this.getToken();
             })
+           
     }
 
     setLoginDisplay() {
@@ -71,6 +73,7 @@ export class AppComponent implements OnInit, OnDestroy {
             let accounts = this.authService.instance.getAllAccounts();
             // add your code for handling multiple accounts here
             this.authService.instance.setActiveAccount(accounts[0]);
+            
         }
     }
 
@@ -111,6 +114,33 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     // unsubscribe to events when component is destroyed
+    getToken() {
+        // this.authService.acquireTokenSilent({
+        //     scopes: ['api://322df5d9-ff81-4da8-a8b9-e07d755d9f71/API.Read']
+        // }).subscribe(
+        //     (response) => {
+        //         console.log(response);
+        //     },
+        //     (error) => {
+        //         console.error(error);
+        //     }
+        // )
+        const activeAccount = this.authService.instance.getActiveAccount() || this.authService.instance.getAllAccounts()[0];
+        console.log(activeAccount);
+        this.authService.acquireTokenSilent(
+            {
+                scopes: ['api://322df5d9-ff81-4da8-a8b9-e07d755d9f71/API.Read'], 
+                account: activeAccount
+            }, 
+        ).subscribe(
+            (response) => {
+                console.log(response);
+            },
+            (error) => {
+                console.error(error);
+            }
+        )
+    }
     ngOnDestroy(): void {
         this._destroying$.next(undefined);
         this._destroying$.complete();
